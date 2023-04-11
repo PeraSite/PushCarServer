@@ -1,6 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushCarServer", "PushCarServer\PushCarServer.csproj", "{1C53A348-EDEA-4CED-9ABD-D63C2E97A899}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushCar.Server", "PushCar.Server\PushCar.Server.csproj", "{1C53A348-EDEA-4CED-9ABD-D63C2E97A899}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushCar.Common", "PushCar.Common\PushCar.Common.csproj", "{7D5EA7F2-CAE5-4DA8-B283-91501B2E0848}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushCar.MockClient", "PushCar.MockClient\PushCar.MockClient.csproj", "{90570CD8-5449-41D8-98A8-CA476E585C09}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +16,13 @@ Global
 		{1C53A348-EDEA-4CED-9ABD-D63C2E97A899}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C53A348-EDEA-4CED-9ABD-D63C2E97A899}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C53A348-EDEA-4CED-9ABD-D63C2E97A899}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D5EA7F2-CAE5-4DA8-B283-91501B2E0848}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D5EA7F2-CAE5-4DA8-B283-91501B2E0848}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D5EA7F2-CAE5-4DA8-B283-91501B2E0848}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{7D5EA7F2-CAE5-4DA8-B283-91501B2E0848}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{90570CD8-5449-41D8-98A8-CA476E585C09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90570CD8-5449-41D8-98A8-CA476E585C09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90570CD8-5449-41D8-98A8-CA476E585C09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90570CD8-5449-41D8-98A8-CA476E585C09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

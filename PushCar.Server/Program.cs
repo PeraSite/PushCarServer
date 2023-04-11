@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 
-namespace PushCarServer;
+namespace PushCar.Server;
 
 internal static class Program {
 	private const int PORT = 8080;
