@@ -2,13 +2,16 @@
 
     <PropertyGroup>
         <OutputType>library</OutputType>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
       <Folder Include="Models\" />
       <Folder Include="Packets\Common\" />
-      <Folder Include="Utils\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
     </ItemGroup>
 
 </Project>

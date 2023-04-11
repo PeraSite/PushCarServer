@@ -1,19 +1,19 @@
 ﻿using System;
 using System.IO;
+using PushCar.Common.Packets.Client;
+using PushCar.Common.Packets.Server;
 
 namespace PushCar.Common {
 	public enum PacketType : byte {
-		ClientHandshake,
-		ServerHandshake,
-
 		ClientPing,
 		ServerPong,
 	}
 
 	public static class PacketTypes {
-		private static IPacket CreatePacket(this PacketType type, BinaryReader reader) {
+		public static IPacket CreatePacket(this PacketType type, BinaryReader reader) {
 			return type switch {
-				// TODO
+				PacketType.ClientPing => new ClientPingPacket(),
+				PacketType.ServerPong => new ServerPongPacket(),
 				_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 			};
 		}

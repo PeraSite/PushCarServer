@@ -4,6 +4,5 @@ namespace PushCar.Common {
 	public interface IPacket {
 		public PacketType Type { get; }
 		public void Serialize(BinaryWriter writer);
-		public void Deserialize(BinaryReader reader);
 	}
 }
