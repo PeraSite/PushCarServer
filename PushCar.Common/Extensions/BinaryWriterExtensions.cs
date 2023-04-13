@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace PushCar.Common.Utils {
+namespace PushCar.Common.Extensions {
 	public static class BinaryWriterExtensions {
 		public static void Write(this BinaryWriter writer, Guid guid) {
 			writer.Write(guid.ToByteArray());
