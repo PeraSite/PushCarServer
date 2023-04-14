@@ -126,13 +126,20 @@ public class GameServer : IDisposable {
 				HandleClientPingPacket(playerConnection, packet);
 				break;
 			}
+			case ClientAuthenticatePacket packet: {
+				HandleClientAuthenticatePacket(playerConnection, packet);
+				break;
+			}
 		}
 	}
 
 #region Packet Handling
 	private void HandleClientPingPacket(PlayerConnection playerConnection, ClientPingPacket packet) {
 		playerConnection.SendPacket(new ServerPongPacket());
-		Debug.Log($"[TCP 서버] 플레이어 Ping: {playerConnection.IP.Address}");
+	}
+
+	private void HandleClientAuthenticatePacket(PlayerConnection playerConnection, ClientAuthenticatePacket packet) {
+
 	}
 #endregion
 

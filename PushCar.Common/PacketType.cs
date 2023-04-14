@@ -7,6 +7,9 @@ namespace PushCar.Common {
 	public enum PacketType : byte {
 		ClientPing,
 		ServerPong,
+
+		ClientAuthenticate,
+		ServerAuthenticate,
 	}
 
 	public static class PacketTypes {
@@ -14,6 +17,7 @@ namespace PushCar.Common {
 			return type switch {
 				PacketType.ClientPing => new ClientPingPacket(),
 				PacketType.ServerPong => new ServerPongPacket(),
+
 				_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 			};
 		}
