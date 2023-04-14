@@ -16,5 +16,9 @@ namespace PushCar.Common.Packets.Server {
 		public void Serialize(BinaryWriter writer) {
 			writer.Write(Success);
 		}
+
+		public override string ToString() {
+			return $"{nameof(ServerAuthenticatePacket)} : {{{nameof(Success)}: {Success}}}";
+		}
 	}
 }

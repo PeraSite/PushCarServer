@@ -20,5 +20,9 @@ namespace PushCar.Common.Packets.Client {
 			writer.Write(Id);
 			writer.Write(EncryptedPassword);
 		}
+
+		public override string ToString() {
+			return $"{nameof(ClientAuthenticatePacket)} : {{{nameof(Id)}: {Id}, {nameof(EncryptedPassword)}: {EncryptedPassword}}}";
+		}
 	}
 }
