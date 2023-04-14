@@ -141,7 +141,15 @@ public class GameServer : IDisposable {
 		playerConnection.SendPacket(new ServerPongPacket());
 	}
 
-	private void HandleClientAuthenticatePacket(PlayerConnection playerConnection, ClientAuthenticatePacket packet) { }
+	private void HandleClientAuthenticatePacket(PlayerConnection playerConnection, ClientAuthenticatePacket packet) {
+		if (_userRepository.ExistUser(packet.Id)) {
+			var result = _userRepository.Login(packet.Id, packet.EncryptedPassword);
+			playerConnection.SendPacket(new ServerAuthenticatePacket(result));
+		} else {
+			var result = _userRepository.Register(packet.Id, packet.EncryptedPassword);
+			playerConnection.SendPacket(new ServerAuthenticatePacket(result));
+		}
+	}
 #endregion
 
 
