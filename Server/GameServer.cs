@@ -1,11 +1,12 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using PushCar.Common;
 using PushCar.Common.Packets.Client;
 using PushCar.Common.Packets.Server;
-using PushCar.Common.Utils;
 using PushCar.Server.Repository;
+using Debug = PushCar.Common.Utils.Debug;
 
 namespace PushCar.Server;
 
@@ -74,28 +75,16 @@ public class GameServer : IDisposable {
 		// PlayerConnection 생성
 		var playerConnection = new PlayerConnection(client);
 		_playerConnections.Add(playerConnection);
-
-		var ip = playerConnection.IP;
-		var reader = playerConnection.Reader;
-
-		Debug.Log("[TCP 서버] 클라이언트 접속: IP 주소={0}, 포트번호={1}", ip.Address, ip.Port);
+		Debug.Log($"[TCP 서버] 클라이언트 접속: {playerConnection}");
 
 		// 패킷 읽기
 		try {
 			while (client.Connected) {
-				// 패킷 ID 읽기
-				var packetID = reader.BaseStream.ReadByte();
-
-				// 읽을 수 없다면(데이터가 끝났다면 리턴)
-				if (packetID == -1) break;
-
-				var packetType = (PacketType)packetID;
-
-				// 타입에 맞는 패킷 객체 생성
-				var basePacket = packetType.CreatePacket(reader);
+				// 패킷 읽기
+				var packet = playerConnection.ReadPacket();
 
 				// 패킷 큐에 추가
-				_receivedPacketQueue.Enqueue((playerConnection, basePacket));
+				_receivedPacketQueue.Enqueue((playerConnection, packet));
 			}
 		}
 		catch (IOException) {
@@ -118,7 +107,7 @@ public class GameServer : IDisposable {
 		_playerConnections.Remove(playerConnection);
 
 		// 클라이언트 닫기
-		playerConnection.Client.Close();
+		playerConnection.Dispose();
 
 		Debug.Log("[TCP 서버] 클라이언트 종료: IP 주소={0}, 포트 번호={1}", address.Address, address.Port);
 	}

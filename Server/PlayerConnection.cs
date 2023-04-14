@@ -6,7 +6,7 @@ using PushCar.Common.Utils;
 
 namespace PushCar.Server;
 
-public class PlayerConnection {
+public class PlayerConnection : IDisposable {
 	public TcpClient Client { get; }
 	public NetworkStream Stream { get; }
 	public BinaryReader Reader { get; }
@@ -21,6 +21,28 @@ public class PlayerConnection {
 		Reader = new BinaryReader(Stream);
 	}
 
+	public IPacket ReadPacket() {
+		try {
+			var id = Stream.ReadByte();
+			// 읽을 수 없다면(데이터가 끝났다면 리턴)
+			if (id == -1) throw new IOException("EOF");
+
+			// 타입에 맞는 패킷 객체 생성
+			var packetType = (PacketType)id;
+			var packet = packetType.CreatePacket(Reader);
+			Debug.Log($"[C({ToString()}) -> S] {packet}");
+
+			return packet;
+		}
+		catch (IOException e) {
+			throw;
+		}
+		catch (Exception e) {
+			Console.WriteLine(e);
+			throw;
+		}
+	}
+
 	public void SendPacket(IPacket packet) {
 		if (!Stream.CanRead) return;
 		if (!Stream.CanWrite) return;
@@ -32,5 +54,13 @@ public class PlayerConnection {
 		Writer.Write(packet);
 	}
 
-	public string ToString() => $"{IP.Address}:{IP.Port}";
+	public override string ToString() => $"{IP.Address}:{IP.Port}";
+
+	public void Dispose() {
+		Stream.Dispose();
+		Reader.Dispose();
+		Writer.Dispose();
+		Client.Dispose();
+		GC.SuppressFinalize(this);
+	}
 }
