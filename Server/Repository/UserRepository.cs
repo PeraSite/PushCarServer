@@ -27,7 +27,7 @@ public class UserRepository {
 
 	public bool Register(string id, string password) {
 		var idParam = (new MySqlParameter("@id", MySqlDbType.VarChar, 32), id);
-		var passwordParam = (new MySqlParameter("@pw", MySqlDbType.VarBinary, 256), password);
+		var passwordParam = (new MySqlParameter("@password", MySqlDbType.VarBinary, 256), password);
 
 		using MySqlDataReader reader = _database.Execute("INSERT user VALUES (@id, @password)", idParam, passwordParam);
 		return reader.RecordsAffected >= 1;
