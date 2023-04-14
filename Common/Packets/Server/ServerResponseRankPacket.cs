@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using PushCar.Common.Models;
 
 namespace PushCar.Common.Packets.Server {
@@ -27,7 +28,8 @@ namespace PushCar.Common.Packets.Server {
 		}
 
 		public override string ToString() {
-			return $"{nameof(ServerPongPacket)} {{}}";
+			var recordStr = string.Join(", ", Records.Select(x => $"{x.Id}:{x.Distance}"));
+			return $"{nameof(ServerResponseRankPacket)} {{{nameof(Records)}: {recordStr} }}";
 		}
 	}
 }
