@@ -131,6 +131,7 @@ public class GameServer : IDisposable {
 				break;
 			}
 			case ClientRequestRankPacket packet: {
+				HandleClientRequestRankPacket(playerConnection, packet);
 				break;
 			}
 			default:
@@ -162,6 +163,11 @@ public class GameServer : IDisposable {
 		var distance = FLAG_POSITION - (CAR_POSITION + swipeDistance);
 		Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id}의 기록: {distance}m");
 		_recordRepository.AddRecord(new Record(packet.Id, distance));
+	}
+
+	private void HandleClientRequestRankPacket(PlayerConnection playerConnection, ClientRequestRankPacket packet) {
+		var records = _recordRepository.GetRecords();
+		playerConnection.SendPacket(new ServerResponseRankPacket(records));
 	}
 #endregion
 
