@@ -22,10 +22,10 @@ public class RecordRepository {
 
 	public List<Record> GetRecords(int amount = 5) {
 		var amountParam = (new MySqlParameter("@amount", MySqlDbType.Int32), amount);
-		using MySqlDataReader reader = _database.Execute("SELECT * FROM record ORDER BY distance DESC LIMIT @amount", amountParam);
+		using MySqlDataReader reader = _database.Execute("SELECT * FROM record ORDER BY distance ASC LIMIT @amount", amountParam);
 		var records = new List<Record>();
 		while (reader.Read()) {
-			var id = reader.GetString("id");
+			var id = reader.GetString("user_id");
 			var distance = reader.GetFloat("distance");
 			var time = reader.GetDateTime("created_at");
 			records.Add(new Record(id, distance, time));
