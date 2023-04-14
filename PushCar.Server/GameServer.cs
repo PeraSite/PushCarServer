@@ -5,18 +5,21 @@ using PushCar.Common;
 using PushCar.Common.Packets.Client;
 using PushCar.Common.Packets.Server;
 using PushCar.Common.Utils;
+using PushCar.Server.Repository;
 
 namespace PushCar.Server;
 
 public class GameServer : IDisposable {
+	private readonly UserRepository _userRepository;
 	private readonly TcpListener _server;
 	private readonly List<PlayerConnection> _playerConnections;
 	private readonly ConcurrentQueue<(PlayerConnection playerConnection, IPacket packet)> _receivedPacketQueue;
 
-	public GameServer(int port) {
+	public GameServer(int port, UserRepository userRepository) {
 		_server = new TcpListener(IPAddress.Any, port);
 		_playerConnections = new List<PlayerConnection>();
 		_receivedPacketQueue = new ConcurrentQueue<(PlayerConnection playerConnection, IPacket packet)>();
+		_userRepository = userRepository;
 	}
 
 	public void Dispose() {
@@ -138,9 +141,7 @@ public class GameServer : IDisposable {
 		playerConnection.SendPacket(new ServerPongPacket());
 	}
 
-	private void HandleClientAuthenticatePacket(PlayerConnection playerConnection, ClientAuthenticatePacket packet) {
-
-	}
+	private void HandleClientAuthenticatePacket(PlayerConnection playerConnection, ClientAuthenticatePacket packet) { }
 #endregion
 
 
