@@ -10,6 +10,11 @@ namespace PushCar.Common {
 
 		ClientAuthenticate,
 		ServerAuthenticate,
+
+		ClientRecord,
+
+		ClientRequestRank,
+		ServerResponseRank
 	}
 
 	public static class PacketTypes {
@@ -19,6 +24,9 @@ namespace PushCar.Common {
 				PacketType.ServerPong => new ServerPongPacket(),
 				PacketType.ClientAuthenticate => new ClientAuthenticatePacket(reader),
 				PacketType.ServerAuthenticate => new ServerAuthenticatePacket(reader),
+				PacketType.ClientRecord => new ClientRecordPacket(reader),
+				PacketType.ClientRequestRank => new ClientRequestRankPacket(),
+				PacketType.ServerResponseRank => new ServerResponseRankPacket(reader),
 				_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 			};
 		}
