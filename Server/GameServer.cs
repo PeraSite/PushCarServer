@@ -1,26 +1,30 @@
 ﻿using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using PushCar.Common;
+using PushCar.Common.Models;
 using PushCar.Common.Packets.Client;
 using PushCar.Common.Packets.Server;
+using PushCar.Common.Utils;
 using PushCar.Server.Repository;
-using Debug = PushCar.Common.Utils.Debug;
 
 namespace PushCar.Server;
 
 public class GameServer : IDisposable {
 	private readonly UserRepository _userRepository;
+	private readonly RecordRepository _recordRepository;
+
 	private readonly TcpListener _server;
 	private readonly List<PlayerConnection> _playerConnections;
 	private readonly ConcurrentQueue<(PlayerConnection playerConnection, IPacket packet)> _receivedPacketQueue;
 
-	public GameServer(int port, UserRepository userRepository) {
+	public GameServer(int port, UserRepository userRepository, RecordRepository recordRepository) {
 		_server = new TcpListener(IPAddress.Any, port);
 		_playerConnections = new List<PlayerConnection>();
 		_receivedPacketQueue = new ConcurrentQueue<(PlayerConnection playerConnection, IPacket packet)>();
+
 		_userRepository = userRepository;
+		_recordRepository = recordRepository;
 	}
 
 	public void Dispose() {
@@ -122,6 +126,16 @@ public class GameServer : IDisposable {
 				HandleClientAuthenticatePacket(playerConnection, packet);
 				break;
 			}
+			case ClientRecordPacket packet: {
+				HandleClientRecordPacket(playerConnection, packet);
+				break;
+			}
+			case ClientRequestRankPacket packet: {
+				break;
+			}
+			default:
+				throw new ArgumentOutOfRangeException(nameof(basePacket));
+
 		}
 	}
 
@@ -138,6 +152,16 @@ public class GameServer : IDisposable {
 			var result = _userRepository.Register(packet.Id, packet.EncryptedPassword);
 			playerConnection.SendPacket(new ServerAuthenticatePacket(result));
 		}
+	}
+
+	// 계산용 상수
+	private const float CAR_POSITION = -7f;
+	private const float FLAG_POSITION = 7.5f;
+	private void HandleClientRecordPacket(PlayerConnection playerConnection, ClientRecordPacket packet) {
+		var swipeDistance = packet.SwipeDistance;
+		var distance = FLAG_POSITION - (CAR_POSITION + swipeDistance);
+		Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id}의 기록: {distance}m");
+		_recordRepository.AddRecord(new Record(packet.Id, distance));
 	}
 #endregion
 

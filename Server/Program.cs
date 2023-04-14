@@ -26,9 +26,10 @@ internal static class Program {
 		// DB 초기화
 		using MySqlDatabase database = new MySqlDatabase(ip, port, databaseName, sqlUser, password);
 		UserRepository userRepository = new UserRepository(database);
+		RecordRepository recordRepository = new RecordRepository(database);
 
 		// 서버 시작
-		GameServer server = new GameServer(LISTEN_PORT, userRepository);
+		GameServer server = new GameServer(LISTEN_PORT, userRepository, recordRepository);
 		server.Start();
 	}
 

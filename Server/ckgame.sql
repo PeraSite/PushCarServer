@@ -21,3 +21,19 @@ SELECT 1
 FROM user
 WHERE id = @id
   AND password = SHA2(@pw, 256);
+
+
+# record 테이블 생성
+CREATE TABLE record
+(
+    user_id    VARCHAR(32) NOT NULL,
+    distance   FLOAT       NOT NULL,
+    created_at DATETIME    NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE
+);
+
+# 새 record 만들기
+set @user_id = 'test';
+set @distance = 10.5;
+INSERT record
+VALUES (@user_id, @distance, NOW());
