@@ -7,6 +7,12 @@ namespace PushCar.Common.Models {
 		public float Distance { get; }
 		public DateTime Time { get; }
 
+		public Record(string id, float distance) {
+			Id = id;
+			Distance = distance;
+			Time = DateTime.Now;
+		}
+
 		public Record(string id, float distance, DateTime time) {
 			Id = id;
 			Distance = distance;
