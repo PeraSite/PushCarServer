@@ -17,7 +17,8 @@ namespace PushCar.Common {
 			return type switch {
 				PacketType.ClientPing => new ClientPingPacket(),
 				PacketType.ServerPong => new ServerPongPacket(),
-
+				PacketType.ClientAuthenticate => new ClientAuthenticatePacket(reader),
+				PacketType.ServerAuthenticate => new ServerAuthenticatePacket(reader),
 				_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 			};
 		}
