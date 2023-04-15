@@ -1,5 +1,7 @@
 ﻿using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using PushCar.Common;
 using PushCar.Common.Extensions;
 using PushCar.Common.Utils;
@@ -8,7 +10,7 @@ namespace PushCar.Server;
 
 public class PlayerConnection : IDisposable {
 	public TcpClient Client { get; }
-	public NetworkStream Stream { get; }
+	public SslStream Stream { get; }
 	public BinaryReader Reader { get; }
 	public BinaryWriter Writer { get; }
 	public IPEndPoint IP => (IPEndPoint)Client.Client.RemoteEndPoint!;
@@ -16,7 +18,13 @@ public class PlayerConnection : IDisposable {
 	public PlayerConnection(TcpClient client) {
 		Client = client;
 
-		Stream = Client.GetStream();
+		// Create Ssl Stream
+		Stream = new SslStream(Client.GetStream(), false);
+		var certificate = new X509Certificate2("server.pfx", "password");
+
+		Stream.AuthenticateAsServer(certificate, false,
+			System.Security.Authentication.SslProtocols.Tls12, false);
+
 		Writer = new BinaryWriter(Stream);
 		Reader = new BinaryReader(Stream);
 	}
