@@ -149,9 +149,11 @@ public class GameServer : IDisposable {
 		if (_userRepository.ExistUser(packet.Id)) {
 			var result = _userRepository.Login(packet.Id, packet.EncryptedPassword);
 			playerConnection.SendPacket(new ServerAuthenticatePacket(result));
+			Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id} 로그인: {result}");
 		} else {
 			var result = _userRepository.Register(packet.Id, packet.EncryptedPassword);
 			playerConnection.SendPacket(new ServerAuthenticatePacket(result));
+			Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id} 회원가입: {result}");
 		}
 	}
 
