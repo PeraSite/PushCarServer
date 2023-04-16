@@ -161,6 +161,10 @@ public class GameServer : IDisposable {
 	private void HandleClientRecordPacket(PlayerConnection playerConnection, ClientRecordPacket packet) {
 		var swipeDistance = packet.SwipeDistance;
 		var distance = FLAG_POSITION - (CAR_POSITION + swipeDistance);
+		if (distance < 0f) {
+			Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id}의 기록: {distance}m, 올바르지 않음");
+			return;
+		}
 		Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id}의 기록: {distance}m");
 		_recordRepository.AddRecord(new Record(packet.Id, distance));
 	}
