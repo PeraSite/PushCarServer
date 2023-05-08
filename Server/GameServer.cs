@@ -11,20 +11,17 @@ using PushCar.Server.Repository;
 namespace PushCar.Server;
 
 public class GameServer : IDisposable {
-	private readonly UserRepository _userRepository;
-	private readonly RecordRepository _recordRepository;
-
+	private readonly PacketHandler _packetHandler;
 	private readonly TcpListener _server;
 	private readonly List<PlayerConnection> _playerConnections;
 	private readonly ConcurrentQueue<(PlayerConnection playerConnection, IPacket packet)> _receivedPacketQueue;
 
-	public GameServer(int port, UserRepository userRepository, RecordRepository recordRepository) {
+	public GameServer(int port, PacketHandler packetHandler) {
 		_server = new TcpListener(IPAddress.Any, port);
 		_playerConnections = new List<PlayerConnection>();
 		_receivedPacketQueue = new ConcurrentQueue<(PlayerConnection playerConnection, IPacket packet)>();
 
-		_userRepository = userRepository;
-		_recordRepository = recordRepository;
+		_packetHandler = packetHandler;
 	}
 
 	public void Dispose() {
@@ -47,7 +44,7 @@ public class GameServer : IDisposable {
 						var (playerConnection, packet) = tuple;
 
 						// handle packet
-						HandlePacket(packet, playerConnection);
+						_packetHandler.HandlePacket(packet, playerConnection);
 					}
 				}
 			}
@@ -115,74 +112,4 @@ public class GameServer : IDisposable {
 
 		Debug.Log("[TCP 서버] 클라이언트 종료: IP 주소={0}, 포트 번호={1}", address.Address, address.Port);
 	}
-
-	private void HandlePacket(IPacket basePacket, PlayerConnection playerConnection) {
-		switch (basePacket) {
-			case ClientPingPacket packet: {
-				HandleClientPingPacket(playerConnection, packet);
-				break;
-			}
-			case ClientAuthenticatePacket packet: {
-				HandleClientAuthenticatePacket(playerConnection, packet);
-				break;
-			}
-			case ClientRecordPacket packet: {
-				HandleClientRecordPacket(playerConnection, packet);
-				break;
-			}
-			case ClientRequestRankPacket packet: {
-				HandleClientRequestRankPacket(playerConnection, packet);
-				break;
-			}
-			default:
-				throw new ArgumentOutOfRangeException(nameof(basePacket));
-
-		}
-	}
-
-#region Packet Handling
-	private void HandleClientPingPacket(PlayerConnection playerConnection, ClientPingPacket packet) {
-		playerConnection.SendPacket(new ServerPongPacket());
-	}
-
-	private void HandleClientAuthenticatePacket(PlayerConnection playerConnection, ClientAuthenticatePacket packet) {
-		if (_userRepository.ExistUser(packet.Id)) {
-			var result = _userRepository.Login(packet.Id, packet.EncryptedPassword);
-			playerConnection.SendPacket(new ServerAuthenticatePacket(result));
-			Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id} 로그인: {result}");
-		} else {
-			var result = _userRepository.Register(packet.Id, packet.EncryptedPassword);
-			playerConnection.SendPacket(new ServerAuthenticatePacket(result));
-			Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id} 회원가입: {result}");
-		}
-	}
-
-	// 계산용 상수
-	private const float CAR_POSITION = -7f;
-	private const float FLAG_POSITION = 7.5f;
-	private void HandleClientRecordPacket(PlayerConnection playerConnection, ClientRecordPacket packet) {
-		var swipeDistance = packet.SwipeDistance;
-		var distance = FLAG_POSITION - (CAR_POSITION + swipeDistance);
-		if (distance < 0f) {
-			Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id}의 기록: {distance}m, 올바르지 않음");
-			return;
-		}
-		Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id}의 기록: {distance}m");
-		_recordRepository.AddRecord(new Record(packet.Id, distance));
-	}
-
-	private void HandleClientRequestRankPacket(PlayerConnection playerConnection, ClientRequestRankPacket packet) {
-		var records = _recordRepository.GetRecords();
-		playerConnection.SendPacket(new ServerResponseRankPacket(records));
-	}
-#endregion
-
-
-#region Util
-	private void Broadcast(IPacket packet) {
-		foreach (var playerConnection in _playerConnections) {
-			playerConnection.SendPacket(packet);
-		}
-	}
-#endregion
 }

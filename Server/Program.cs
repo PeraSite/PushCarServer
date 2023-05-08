@@ -29,7 +29,8 @@ internal static class Program {
 		RecordRepository recordRepository = new RecordRepository(database);
 
 		// 서버 시작
-		GameServer server = new GameServer(LISTEN_PORT, userRepository, recordRepository);
+		PacketHandler packetHandler = new PacketHandler(userRepository, recordRepository);
+		GameServer server = new GameServer(LISTEN_PORT, packetHandler);
 		server.Start();
 	}
 
