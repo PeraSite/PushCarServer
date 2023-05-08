@@ -1,5 +1,4 @@
-﻿using System.Net;
-using PushCar.Common;
+﻿using PushCar.Common;
 using PushCar.Common.Models;
 using PushCar.Common.Packets.Client;
 using PushCar.Common.Packets.Server;
@@ -93,7 +92,8 @@ public class PacketHandler {
 	}
 
 	private void HandleClientRequestRankPacket(PlayerConnection playerConnection, ClientRequestRankPacket packet) {
-		var records = _recordRepository.GetRecords();
-		playerConnection.SendPacket(new ServerResponseRankPacket(records));
+		var count = _recordRepository.GetRankCount();
+		var records = _recordRepository.GetRanks(packet.Page, packet.RecordsPerPage);
+		playerConnection.SendPacket(new ServerResponseRankPacket(records, packet.Page, count / packet.RecordsPerPage));
 	}
 }

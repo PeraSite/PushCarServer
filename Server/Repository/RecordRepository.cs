@@ -20,9 +20,17 @@ public class RecordRepository {
 		return reader.RecordsAffected > 0;
 	}
 
-	public List<Record> GetRecords(int amount = 5) {
-		var amountParam = (new MySqlParameter("@amount", MySqlDbType.Int32), amount);
-		using MySqlDataReader reader = _database.Execute("SELECT * FROM record ORDER BY distance ASC LIMIT @amount", amountParam);
+	public int GetRankCount() {
+		using MySqlDataReader reader = _database.Execute("SELECT count(*) FROM record");
+		reader.Read();
+		var count = reader.GetInt32(0);
+		return count;
+	}
+
+	public List<Record> GetRanks(int page = 0, int recordsPerPage = 5) {
+		var pageParam = (new MySqlParameter("@page", MySqlDbType.Int32), page * recordsPerPage);
+		var recordsParam = (new MySqlParameter("@records", MySqlDbType.Int32), recordsPerPage);
+		using MySqlDataReader reader = _database.Execute("SELECT * FROM record ORDER BY distance LIMIT @page,@records", pageParam, recordsParam);
 		var records = new List<Record>();
 		while (reader.Read()) {
 			var id = reader.GetString("user_id");

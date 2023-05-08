@@ -27,7 +27,7 @@ namespace PushCar.Common {
 				PacketType.ServerAuthenticateSuccess => new ServerAuthenticateSuccessPacket(reader),
 				PacketType.ServerAuthenticateFail => new ServerAuthenticateFailPacket(reader),
 				PacketType.ClientRecord => new ClientRecordPacket(reader),
-				PacketType.ClientRequestRank => new ClientRequestRankPacket(),
+				PacketType.ClientRequestRank => new ClientRequestRankPacket(reader),
 				PacketType.ServerResponseRank => new ServerResponseRankPacket(reader),
 				_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 			};
