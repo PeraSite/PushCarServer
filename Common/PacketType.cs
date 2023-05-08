@@ -9,7 +9,8 @@ namespace PushCar.Common {
 		ServerPong,
 
 		ClientAuthenticate,
-		ServerAuthenticate,
+		ServerAuthenticateSuccess,
+		ServerAuthenticateFail,
 
 		ClientRecord,
 
@@ -23,7 +24,8 @@ namespace PushCar.Common {
 				PacketType.ClientPing => new ClientPingPacket(),
 				PacketType.ServerPong => new ServerPongPacket(),
 				PacketType.ClientAuthenticate => new ClientAuthenticatePacket(reader),
-				PacketType.ServerAuthenticate => new ServerAuthenticatePacket(reader),
+				PacketType.ServerAuthenticateSuccess => new ServerAuthenticateSuccessPacket(reader),
+				PacketType.ServerAuthenticateFail => new ServerAuthenticateFailPacket(reader),
 				PacketType.ClientRecord => new ClientRecordPacket(reader),
 				PacketType.ClientRequestRank => new ClientRequestRankPacket(),
 				PacketType.ServerResponseRank => new ServerResponseRankPacket(reader),

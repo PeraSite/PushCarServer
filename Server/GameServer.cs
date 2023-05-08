@@ -2,9 +2,6 @@
 using System.Net;
 using System.Net.Sockets;
 using PushCar.Common;
-using PushCar.Common.Models;
-using PushCar.Common.Packets.Client;
-using PushCar.Common.Packets.Server;
 using PushCar.Common.Utils;
 using PushCar.Server.Repository;
 
@@ -15,13 +12,14 @@ public class GameServer : IDisposable {
 	private readonly TcpListener _server;
 	private readonly List<PlayerConnection> _playerConnections;
 	private readonly ConcurrentQueue<(PlayerConnection playerConnection, IPacket packet)> _receivedPacketQueue;
+	private readonly Dictionary<Guid, PlayerConnection> _tokens;
 
-	public GameServer(int port, PacketHandler packetHandler) {
+	public GameServer(int port, UserRepository userRepository, RecordRepository recordRepository) {
 		_server = new TcpListener(IPAddress.Any, port);
 		_playerConnections = new List<PlayerConnection>();
 		_receivedPacketQueue = new ConcurrentQueue<(PlayerConnection playerConnection, IPacket packet)>();
-
-		_packetHandler = packetHandler;
+		_packetHandler = new PacketHandler(userRepository, recordRepository, this);
+		_tokens = new Dictionary<Guid, PlayerConnection>();
 	}
 
 	public void Dispose() {
@@ -107,9 +105,16 @@ public class GameServer : IDisposable {
 		// PlayerConnection Dictionary 에서 삭제
 		_playerConnections.Remove(playerConnection);
 
+		// 토큰 삭제
+		RemoveToken(playerConnection.Token);
+
 		// 클라이언트 닫기
 		playerConnection.Dispose();
 
 		Debug.Log("[TCP 서버] 클라이언트 종료: IP 주소={0}, 포트 번호={1}", address.Address, address.Port);
 	}
+
+	public void AddToken(PlayerConnection connection, Guid token) => _tokens[token] = connection;
+	public void RemoveToken(Guid token) => _tokens.Remove(token);
+	public bool ExistToken(Guid token) => _tokens.ContainsKey(token);
 }

@@ -15,6 +15,9 @@ public class PlayerConnection : IDisposable {
 	public BinaryWriter Writer { get; }
 	public IPEndPoint IP => (IPEndPoint)Client.Client.RemoteEndPoint!;
 
+	public string ID;
+	public Guid Token;
+
 	public PlayerConnection(TcpClient client) {
 		Client = client;
 
@@ -27,6 +30,9 @@ public class PlayerConnection : IDisposable {
 
 		Writer = new BinaryWriter(Stream);
 		Reader = new BinaryReader(Stream);
+
+		ID = string.Empty;
+		Token = Guid.Empty;
 	}
 
 	public IPacket ReadPacket() {
@@ -62,9 +68,19 @@ public class PlayerConnection : IDisposable {
 		Writer.Write(packet);
 	}
 
-	public override string ToString() => $"{IP.Address}:{IP.Port}";
+	public override string ToString() {
+		// 로그인했다면 ID 표기
+		if (!string.IsNullOrEmpty(ID)) {
+			return $"ID={ID}";
+		}
+
+		// 아니라면 IP 표기
+		return $"{IP.Address}:{IP.Port}";
+	}
 
 	public void Dispose() {
+		ID = string.Empty;
+		Token = Guid.Empty;
 		Stream.Dispose();
 		Reader.Dispose();
 		Writer.Dispose();
