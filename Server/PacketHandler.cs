@@ -2,6 +2,7 @@
 using PushCar.Common.Models;
 using PushCar.Common.Packets.Client;
 using PushCar.Common.Packets.Server;
+using PushCar.Common.Utils;
 using PushCar.Server.Repository;
 
 namespace PushCar.Server;
@@ -105,8 +106,10 @@ public class PacketHandler {
 	}
 
 	private void HandleClientRequestSaltPacket(PlayerConnection playerConnection, ClientRequestSaltPacket packet) {
+		// 존재하지 않아도 브루트포스 방지를 위해 랜덤 salt 전송
 		if (!_userRepository.ExistUser(packet.Id)) {
-			playerConnection.SendPacket(new ServerAuthenticateFailPacket("아이디 또는 비밀번호가 올바르지 않습니다."));
+			var newSalt = CryptoUtil.GetUniqueString(32);
+			playerConnection.SendPacket(new ServerResponseSaltPacket(newSalt));
 			return;
 		}
 
