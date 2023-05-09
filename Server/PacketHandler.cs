@@ -23,8 +23,16 @@ public class PacketHandler {
 				HandleClientPingPacket(playerConnection, packet);
 				break;
 			}
-			case ClientAuthenticatePacket packet: {
-				HandleClientAuthenticatePacket(playerConnection, packet);
+			case ClientLoginPacket packet: {
+				HandleClientLoginPacket(playerConnection, packet);
+				break;
+			}
+			case ClientRegisterPacket packet: {
+				HandleClientRegisterPacket(playerConnection, packet);
+				break;
+			}
+			case ClientRequestSaltPacket packet: {
+				HandleClientRequestSaltPacket(playerConnection, packet);
 				break;
 			}
 			case ClientRecordPacket packet: {
@@ -44,26 +52,66 @@ public class PacketHandler {
 		playerConnection.SendPacket(new ServerPongPacket());
 	}
 
-	private void HandleClientAuthenticatePacket(PlayerConnection playerConnection, ClientAuthenticatePacket packet) {
-		var existUser = _userRepository.ExistUser(packet.Id);
+	private void HandleClientLoginPacket(PlayerConnection playerConnection, ClientLoginPacket packet) {
+		if (!_userRepository.ExistUser(packet.Id)) {
+			playerConnection.SendPacket(new ServerAuthenticateFailPacket("아이디 또는 비밀번호가 올바르지 않습니다."));
+			return;
+		}
 
-		var authSuccess = existUser
-			? _userRepository.Login(packet.Id, packet.EncryptedPassword)
-			: _userRepository.Register(packet.Id, packet.EncryptedPassword);
+		var success = _userRepository.Login(packet.Id, packet.EncryptedPassword);
 
-		if (authSuccess) {
+		if (success) {
 			var token = Guid.NewGuid();
 
+			// ID와 토큰 할당
 			playerConnection.ID = packet.Id;
 			playerConnection.Token = token;
 
+			// Valid한 토큰 목록에 추가
 			_gameServer.AddToken(playerConnection, token);
+
 			playerConnection.SendPacket(new ServerAuthenticateSuccessPacket(token));
-			Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id} 접속 성공 - {token}");
+			Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id} 로그인 성공 - {token}");
 		} else {
 			playerConnection.SendPacket(new ServerAuthenticateFailPacket("아이디 또는 비밀번호가 올바르지 않습니다."));
 			Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id} 접속 실패");
 		}
+	}
+
+	private void HandleClientRegisterPacket(PlayerConnection playerConnection, ClientRegisterPacket packet) {
+		if (_userRepository.ExistUser(packet.Id)) {
+			playerConnection.SendPacket(new ServerAuthenticateFailPacket("아이디 또는 비밀번호가 올바르지 않습니다."));
+			return;
+		}
+
+		var success = _userRepository.Register(packet.Id, packet.EncryptedPassword, packet.Salt);
+
+		if (success) {
+			var token = Guid.NewGuid();
+
+			// ID와 토큰 할당
+			playerConnection.ID = packet.Id;
+			playerConnection.Token = token;
+
+			// Valid한 토큰 목록에 추가
+			_gameServer.AddToken(playerConnection, token);
+
+			playerConnection.SendPacket(new ServerAuthenticateSuccessPacket(token));
+			Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id} 계정 생성 성공 - {token}");
+		} else {
+			playerConnection.SendPacket(new ServerAuthenticateFailPacket("계정 생성에 실패했습니다."));
+			Console.WriteLine($"[TCP 서버] 클라이언트 {packet.Id} 접속 실패");
+		}
+	}
+
+	private void HandleClientRequestSaltPacket(PlayerConnection playerConnection, ClientRequestSaltPacket packet) {
+		if (!_userRepository.ExistUser(packet.Id)) {
+			playerConnection.SendPacket(new ServerAuthenticateFailPacket("아이디 또는 비밀번호가 올바르지 않습니다."));
+			return;
+		}
+
+		var salt = _userRepository.GetSalt(packet.Id);
+		playerConnection.SendPacket(new ServerResponseSaltPacket(salt));
 	}
 
 	private void HandleClientRecordPacket(PlayerConnection playerConnection, ClientRecordPacket packet) {

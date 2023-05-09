@@ -1,17 +1,17 @@
 ﻿using System.IO;
 
 namespace PushCar.Common.Packets.Client {
-	public class ClientAuthenticatePacket : IPacket {
-		public PacketType Type => PacketType.ClientAuthenticate;
+	public class ClientLoginPacket : IPacket {
+		public PacketType Type => PacketType.ClientLogin;
 		public string Id { get; }
 		public string EncryptedPassword { get; }
 
-		public ClientAuthenticatePacket(string id, string encryptedPassword) {
+		public ClientLoginPacket(string id, string encryptedPassword) {
 			Id = id;
 			EncryptedPassword = encryptedPassword;
 		}
 
-		public ClientAuthenticatePacket(BinaryReader reader) {
+		public ClientLoginPacket(BinaryReader reader) {
 			Id = reader.ReadString();
 			EncryptedPassword = reader.ReadString();
 		}
@@ -22,7 +22,7 @@ namespace PushCar.Common.Packets.Client {
 		}
 
 		public override string ToString() {
-			return $"{nameof(ClientAuthenticatePacket)} : {{{nameof(Id)}: {Id}, {nameof(EncryptedPassword)}: {EncryptedPassword}}}";
+			return $"{nameof(ClientLoginPacket)} : {{{nameof(Id)}: {Id}, {nameof(EncryptedPassword)}: {EncryptedPassword}}}";
 		}
 	}
 }

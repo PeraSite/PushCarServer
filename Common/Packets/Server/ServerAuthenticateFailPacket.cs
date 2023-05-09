@@ -18,7 +18,7 @@ namespace PushCar.Common.Packets.Server {
 		}
 
 		public override string ToString() {
-			return $"{nameof(ServerAuthenticateSuccessPacket)} : {{{nameof(Reason)}: {Reason}}}";
+			return $"{nameof(ServerAuthenticateFailPacket)} : {{{nameof(Reason)}: {Reason}}}";
 		}
 	}
 }

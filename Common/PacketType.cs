@@ -8,7 +8,10 @@ namespace PushCar.Common {
 		ClientPing,
 		ServerPong,
 
-		ClientAuthenticate,
+		ClientRequestSalt,
+		ServerResponseSalt,
+		ClientRegister,
+		ClientLogin,
 		ServerAuthenticateSuccess,
 		ServerAuthenticateFail,
 
@@ -23,10 +26,18 @@ namespace PushCar.Common {
 			return type switch {
 				PacketType.ClientPing => new ClientPingPacket(),
 				PacketType.ServerPong => new ServerPongPacket(),
-				PacketType.ClientAuthenticate => new ClientAuthenticatePacket(reader),
+
+				PacketType.ClientRequestSalt => new ClientRequestSaltPacket(reader),
+				PacketType.ServerResponseSalt => new ServerResponseSaltPacket(reader),
+
+				PacketType.ClientRegister => new ClientRegisterPacket(reader),
+				PacketType.ClientLogin => new ClientLoginPacket(reader),
+
 				PacketType.ServerAuthenticateSuccess => new ServerAuthenticateSuccessPacket(reader),
 				PacketType.ServerAuthenticateFail => new ServerAuthenticateFailPacket(reader),
+
 				PacketType.ClientRecord => new ClientRecordPacket(reader),
+
 				PacketType.ClientRequestRank => new ClientRequestRankPacket(reader),
 				PacketType.ServerResponseRank => new ServerResponseRankPacket(reader),
 				_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
