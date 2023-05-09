@@ -23,7 +23,7 @@ namespace PushCar.Common.Packets.Client {
 		}
 
 		public override string ToString() {
-			return $"{nameof(ClientRequestRankPacket)} {{{nameof(Page)}: {Page}, {nameof(RecordsPerPage)}: {RecordsPerPage}}}}}";
+			return $"{nameof(ClientRequestRankPacket)} {{ {nameof(Page)}: {Page}, {nameof(RecordsPerPage)}: {RecordsPerPage} }}";
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace PushCar.Common.Packets.Client {
 		}
 
 		public override string ToString() {
-			return $"{nameof(ClientRecordPacket)} {{ {nameof(Token)}: {Token}, {nameof(SwipeDistance)}: {SwipeDistance}}}";
+			return $"{nameof(ClientRecordPacket)} {{ {nameof(Token)}: {Token}, {nameof(SwipeDistance)}: {SwipeDistance} }}";
 		}
 	}
 }
